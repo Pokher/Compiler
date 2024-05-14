@@ -1,0 +1,39 @@
+%{
+#include<stdio.h>
+int a=0;
+%}
+
+%s A B C D E F
+
+%%
+<INITIAL>a BEGIN A;
+<INITIAL>[^ab] {printf("not accepted\n");}
+<INITIAL>[^a] BEGIN F;
+<A>b BEGIN B;
+<A>[^b] {printf("no\n");}
+<B>a BEGIN C;
+<B>[^a] {printf("no\n");}
+<C>b BEGIN D;
+<C>a BEGIN C;
+<D>a BEGIN C;
+<D>b BEGIN E;
+<E>b BEGIN E;
+<E>a BEGIN C;
+<F>a BEGIN F;
+<F>B BEGIN F;
+<E>[\n] {printf("yes\n");a++;}
+<F>[\n] {printf("no\n");}
+<C>[\n] {printf("no\n");}
+<D>[\n] {printf("no\n");}
+%%
+
+int yywrap()
+{return 1;}
+
+int main()
+{
+yylex();
+printf("Total correct instances: %d\n",a);
+return 0;
+}
+
